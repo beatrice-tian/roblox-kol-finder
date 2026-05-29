@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Creator 完整分析 · Scout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body class="detail-page">
+    <div class="page detail-layout">
+      <header class="detail-header">
+        <a class="back-link" href="index.html">← 返回情报流</a>
+      </header>
+
+      <article class="detail-article" id="detail-root" hidden>
+        <div class="detail-hero">
+          <a class="avatar-link channel-link" data-avatar-link href="#" target="_blank" rel="noopener noreferrer">
+            <img class="avatar-img avatar-img--lg" data-avatar-img alt="" hidden />
+            <span class="avatar-fallback avatar-fallback--lg" data-avatar-fallback></span>
+          </a>
+          <div class="detail-identity">
+            <a class="creator-name-link channel-link" data-name-link href="#" target="_blank" rel="noopener noreferrer">
+              <h1 class="detail-name" data-name></h1>
+            </a>
+            <p class="detail-sub" data-sub></p>
+          </div>
+        </div>
+
+        <section class="detail-section">
+          <h2 class="detail-section-title">完整推荐分析</h2>
+          <div id="detail-recommendation"></div>
+        </section>
+
+        <section class="detail-section">
+          <h2 class="detail-section-title">运营观察（原始）</h2>
+          <p class="detail-paragraph" data-scout-raw></p>
+        </section>
+
+        <section class="detail-section">
+          <h2 class="detail-section-title">数据简评</h2>
+          <p class="detail-paragraph" data-highlight></p>
+        </section>
+
+        <section class="detail-section">
+          <h2 class="detail-section-title">核心数据</h2>
+          <div class="detail-stats" data-stats></div>
+        </section>
+
+        <section class="detail-section">
+          <h2 class="detail-section-title">代表视频</h2>
+          <a class="video-card video-card--detail" data-video-link href="#" target="_blank" rel="noopener noreferrer">
+            <img class="video-thumb" data-video-thumb alt="" />
+            <div class="video-card-body">
+              <span class="video-title" data-video-title></span>
+              <span class="video-meta" data-video-meta></span>
+            </div>
+          </a>
+        </section>
+
+        <p class="detail-signal" data-signal></p>
+      </article>
+
+      <p class="empty-state" id="detail-empty" hidden>未找到该创作者</p>
+    </div>
+
+    <script src="js/detail.js" type="module"></script>
+  </body>
+</html>

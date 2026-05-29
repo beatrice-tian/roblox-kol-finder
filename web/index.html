@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Roblox Creator Scout Brief</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <div>
+            <p class="brand-kicker">Internal · Scouting Digest</p>
+            <h1 class="brand-title">Roblox Creator Scout</h1>
+          </div>
+        </div>
+        <p class="meta" id="meta-generated">—</p>
+      </header>
+
+      <section class="brief" id="brief-section" aria-label="Creator Brief">
+        <h2 class="brief-title" id="brief-title">本周 Creator Scout Brief</h2>
+        <div class="brief-body" id="brief-body"></div>
+        <p class="brief-footnote" id="brief-footnote" hidden></p>
+      </section>
+
+      <section class="feed" aria-label="Creator Cards">
+        <div class="feed-head">
+          <h2 class="feed-title">Creator Cards</h2>
+          <p class="feed-hint">左右滑动 · 箭头键切换</p>
+        </div>
+
+        <div class="carousel-wrap">
+          <button type="button" class="nav-btn nav-prev" id="nav-prev" aria-label="上一位创作者">
+            ‹
+          </button>
+
+          <div class="carousel" id="carousel" tabindex="0">
+            <div class="carousel-track" id="carousel-track"></div>
+          </div>
+
+          <button type="button" class="nav-btn nav-next" id="nav-next" aria-label="下一位创作者">
+            ›
+          </button>
+        </div>
+
+        <div class="progress" id="progress"></div>
+      </section>
+    </div>
+
+    <template id="card-template">
+      <article class="creator-card">
+        <div class="card-top">
+          <a class="avatar-link channel-link" data-avatar-link href="#" target="_blank" rel="noopener noreferrer">
+            <img class="avatar-img" data-avatar-img alt="" hidden />
+            <span class="avatar-fallback" data-avatar-fallback></span>
+          </a>
+          <div class="identity">
+            <div class="name-row">
+              <a class="creator-name-link channel-link" data-name-link href="#" target="_blank" rel="noopener noreferrer">
+                <h3 class="creator-name" data-name></h3>
+              </a>
+              <span class="tier-badge" data-tier></span>
+            </div>
+            <p class="creator-subs" data-subs></p>
+          </div>
+        </div>
+
+        <div class="card-verdict">
+          <p class="verdict-text" data-verdict></p>
+        </div>
+
+        <div class="card-block scout-block">
+          <p class="block-label">运营观察</p>
+          <div class="scout-lines" data-scout></div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat">
+            <span class="stat-label">平均播放</span>
+            <span class="stat-value" data-avg-views></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">互动率</span>
+            <span class="stat-value" data-engagement></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">稳定度</span>
+            <span class="stat-value" data-consistency></span>
+          </div>
+        </div>
+
+        <div class="card-block">
+          <p class="block-label">代表视频</p>
+          <a class="video-card" data-video-link href="#" target="_blank" rel="noopener noreferrer">
+            <img class="video-thumb" data-video-thumb alt="" />
+            <div class="video-card-body">
+              <span class="video-title" data-video-title></span>
+              <span class="video-meta" data-video-meta></span>
+            </div>
+          </a>
+        </div>
+
+        <a class="detail-cta" data-detail-link href="#">查看完整分析 →</a>
+      </article>
+    </template>
+
+    <script src="js/app.js" type="module"></script>
+  </body>
+</html>
