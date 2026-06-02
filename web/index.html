@@ -14,24 +14,30 @@
   </head>
   <body>
     <div class="page">
-      <header class="site-header">
-        <div class="brand">
-          <span class="brand-mark"></span>
-          <div>
-            <p class="brand-kicker">KOL RADAR</p>
-            <h1 class="brand-title">Roblox Creator Scout</h1>
+      <section class="brief-screen" id="brief-screen" aria-label="本期情报简报">
+        <header class="site-header">
+          <div class="brand">
+            <span class="brand-mark"></span>
+            <div>
+              <p class="brand-kicker">KOL RADAR</p>
+              <h1 class="brand-title">Roblox Creator Scout</h1>
+            </div>
           </div>
-        </div>
-        <p class="meta" id="meta-generated">—</p>
-      </header>
+          <p class="meta" id="meta-generated">—</p>
+        </header>
 
-      <section class="brief" id="brief-section" aria-label="Creator Brief">
-        <h2 class="brief-title" id="brief-title">本周 Creator Scout Brief</h2>
-        <div class="brief-body" id="brief-body"></div>
-        <p class="brief-footnote" id="brief-footnote" hidden></p>
+        <section class="brief" id="brief-section" aria-label="Creator Brief">
+          <h2 class="brief-title" id="brief-title">本周 Creator Scout Brief</h2>
+          <div class="brief-body" id="brief-body"></div>
+          <p class="brief-footnote" id="brief-footnote" hidden></p>
+        </section>
+
+        <p class="brief-scroll-hint" aria-hidden="true">
+          <span class="brief-scroll-hint-text">向下滚动 · 查看 Creator Cards</span>
+        </p>
       </section>
 
-      <section class="feed" aria-label="Creator Cards">
+      <section class="feed" id="creators-feed" aria-label="Creator Cards">
         <div class="feed-head">
           <h2 class="feed-title">Creator Cards</h2>
           <p class="feed-hint">左右滑动 · 箭头键切换</p>

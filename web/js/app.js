@@ -180,7 +180,16 @@ function renderProgress(count, activeIndex, onSelect) {
   }
 }
 
+function resetPageScroll() {
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  window.scrollTo(0, 0);
+}
+
 async function main() {
+  resetPageScroll();
+
   let data;
   try {
     data = await loadReport();
@@ -195,6 +204,8 @@ async function main() {
 
   const carousel = new CardCarousel($("#carousel-track"), $("#carousel"));
   carousel.mount(data.creators || []);
+  resetPageScroll();
+  requestAnimationFrame(resetPageScroll);
 
   const updateProgress = (index, total) => {
     renderProgress(total, index, (i) => carousel.goTo(i));
@@ -206,7 +217,17 @@ async function main() {
   $("#nav-next").addEventListener("click", () => carousel.next());
   $("#nav-prev").addEventListener("click", () => carousel.prev());
 
+  function carouselKeyboardActive() {
+    const feed = $("#creators-feed");
+    if (!feed) return false;
+    const rect = feed.getBoundingClientRect();
+    return rect.top < window.innerHeight * 0.5;
+  }
+
   document.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    if (!carouselKeyboardActive() && !e.target.closest("#carousel")) return;
+    e.preventDefault();
     if (e.key === "ArrowRight") carousel.next();
     if (e.key === "ArrowLeft") carousel.prev();
   });
