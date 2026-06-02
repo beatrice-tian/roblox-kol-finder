@@ -16,6 +16,7 @@ function renderStats(container, creator) {
     ["平均播放", formatViews(creator.avg_views)],
     ["互动率", creator.engagement],
     ["稳定度", creator.consistency],
+    ["爆款记录", creator.viral_hit || "—"],
     ["Shorts占比", creator.shorts || "—"],
     ["潜力分", creator.potential_score],
   ];

@@ -212,8 +212,8 @@ class CreatorScorer:
             avg_engagement = 0.0
 
         record.avg_engagement_rate = round(avg_engagement, 2)
-        record.consistency_score = self._compute_consistency_score(
-            record.recent_views
+        record.consistency_score, record.viral_hit_record = (
+            self._compute_consistency_and_viral(record.recent_views)
         )
 
         views_per_sub = avg_views / subs
@@ -242,10 +242,31 @@ class CreatorScorer:
         record.rule_based_reason = self._build_rule_reason(record)
 
     @staticmethod
-    def _compute_consistency_score(views: list[int]) -> float:
-        if len(views) < 2:
-            return 50.0
+    def _compute_consistency_and_viral(views: list[int]) -> tuple[float, str]:
+        """稳定度：去掉播放最高 1 条后，用剩余视频算 CV；爆款单独标记。"""
+        if not views:
+            return 0.0, ""
+        if len(views) == 1:
+            return 50.0, ""
 
+        peak = max(views)
+        peak_index = views.index(peak)
+        base_views = views[:peak_index] + views[peak_index + 1 :]
+
+        viral_hit = ""
+        if base_views:
+            base_mean = statistics.mean(base_views)
+            if base_mean > 0 and peak > base_mean * 3:
+                viral_hit = "有爆款"
+
+        if len(base_views) < 2:
+            return 50.0, viral_hit
+
+        score = CreatorScorer._consistency_from_views(base_views)
+        return score, viral_hit
+
+    @staticmethod
+    def _consistency_from_views(views: list[int]) -> float:
         mean_views = statistics.mean(views)
         if mean_views <= 0:
             return 0.0
@@ -339,9 +360,11 @@ class CreatorScorer:
         elif record.avg_engagement_rate < 2.5:
             reasons.append("互动率一般，潜力等级设上限")
         if record.consistency_score >= 70:
-            reasons.append("近5条视频播放表现较稳定")
+            reasons.append("去掉爆款后基础盘播放较稳定")
         elif record.consistency_score < 40:
-            reasons.append("近作播放波动大，可能存在单条爆款拉动")
+            reasons.append("去掉爆款后基础盘波动仍偏大")
+        if record.viral_hit_record == "有爆款":
+            reasons.append("近作存在单条爆款记录")
         if record.subscribers < self._early_stage_subscribers:
             reasons.append("仍处于早期成长阶段")
         if record.is_shorts:

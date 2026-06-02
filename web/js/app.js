@@ -6,17 +6,26 @@ import {
   formatDate,
   loadReport,
   setupAvatar,
+  sitePath,
 } from "./shared.js";
 
 function renderBrief(brief) {
   $("#brief-title").textContent = brief?.title || "本周 Creator Scout Brief";
   const body = $("#brief-body");
   body.innerHTML = "";
-  (brief?.paragraphs || []).forEach((text) => {
+
+  const paragraphs = brief?.paragraphs?.length
+    ? brief.paragraphs
+    : [brief?.headline, ...(brief?.track_insights || []), brief?.priority_contact].filter(
+        Boolean
+      );
+
+  paragraphs.forEach((text) => {
     const p = document.createElement("p");
     p.textContent = text;
     body.appendChild(p);
   });
+
   const footnote = $("#brief-footnote");
   if (brief?.footnote) {
     footnote.textContent = brief.footnote;
@@ -84,7 +93,7 @@ function fillCard(card, creator) {
   $("[data-video-meta]", card).textContent = metaParts.join(" · ") || "—";
 
   const detailLink = $("[data-detail-link]", card);
-  detailLink.href = `detail.html?rank=${creator.rank}`;
+  detailLink.href = sitePath(`detail.html?rank=${creator.rank}`);
 }
 
 class CardCarousel {

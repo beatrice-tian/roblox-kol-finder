@@ -30,6 +30,7 @@ class CreatorRecord:
     avg_likes: int = 0
     avg_engagement_rate: float = 0.0
     consistency_score: float = 0.0
+    viral_hit_record: str = ""
     videos_sampled: int = 0
     recent_views: list[int] = field(default_factory=list)
     recent_likes: list[int] = field(default_factory=list)
@@ -76,6 +77,7 @@ class CreatorRecord:
             "平均点赞": self.avg_likes,
             "互动率": self.avg_engagement_rate,
             "稳定度": self.consistency_score,
+            "爆款记录": self.viral_hit_record,
             "代表视频": self.video_title,
             "代表视频播放": self.representative_views or self.views,
             "视频链接": self.video_url,

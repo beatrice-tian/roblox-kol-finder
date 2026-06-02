@@ -1,4 +1,5 @@
-export const DATA_URL = "data/report.json";
+/** 相对模块路径，任意页面加载均指向 /data/report.json（适配 Vercel 静态根目录部署） */
+export const DATA_URL = new URL("../data/report.json", import.meta.url).href;
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -193,9 +194,19 @@ export function renderFullRecommendation(container, text) {
 }
 
 export async function loadReport() {
-  const res = await fetch(DATA_URL);
-  if (!res.ok) throw new Error(res.statusText);
+  const res = await fetch(DATA_URL, { cache: "no-store" });
+  if (!res.ok) {
+    throw new Error(
+      `无法加载 ${DATA_URL}（${res.status} ${res.statusText}）。` +
+        "请确认已执行 python -m src.web.build 且 web/data/report.json 已随部署上传。"
+    );
+  }
   return res.json();
+}
+
+/** 站内根路径，避免在 /detail.html 下使用相对路径导致 404 */
+export function sitePath(path) {
+  return path.startsWith("/") ? path : `/${path}`;
 }
 
 export function findCreatorByRank(creators, rank) {

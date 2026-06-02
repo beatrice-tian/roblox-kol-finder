@@ -32,6 +32,8 @@ body {
 }
 
 body {
+  display: block;
+  width: 100%;
   padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
 }
 
@@ -110,6 +112,7 @@ body {
 
 .brief-body p:last-child {
   margin-bottom: 0;
+  color: var(--text);
 }
 
 .brief-footnote {
@@ -117,6 +120,27 @@ body {
   font-size: 12px;
   line-height: 1.5;
   color: var(--text-muted);
+}
+
+.site-footer {
+  display: block;
+  width: 100%;
+  margin: 40px 0 0;
+  padding: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  text-align: center;
+}
+
+.site-footer p {
+  display: block;
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  font-size: 10px;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--text-muted);
+  letter-spacing: 0;
 }
 
 .feed-head {

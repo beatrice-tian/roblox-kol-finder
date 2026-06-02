@@ -88,6 +88,7 @@ def rows_to_creators(
                 "engagement": _format_engagement(row.get("互动率")),
                 "consistency": _format_consistency(row.get("稳定度")),
                 "consistency_raw": row.get("稳定度", ""),
+                "viral_hit": str(row.get("爆款记录", "")).strip(),
                 "scout_note": str(row.get("运营观察", "")).strip(),
                 "scout_style": extra["scout_style"],
                 "recommendation": recommendation,
