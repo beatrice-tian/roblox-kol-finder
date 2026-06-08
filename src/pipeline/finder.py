@@ -103,9 +103,8 @@ class KolFinderPipeline:
         try:
             from src.web.data_export import export_web_data
 
-            json_path = Path(__file__).resolve().parents[2] / "web" / "data" / "report.json"
-            export_web_data(csv_path, json_path)
-            self._safe_print(f"Web 情报流数据已更新: {json_path}")
+            _, json_path = export_web_data(csv_path)
+            self._safe_print(f"Web 情报流数据已归档: {json_path}")
         except Exception as exc:
             self._safe_print(f"Web 数据导出跳过: {exc}")
 

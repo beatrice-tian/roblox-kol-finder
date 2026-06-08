@@ -1,5 +1,10 @@
-/** 相对模块路径，任意页面加载均指向 /data/report.json（适配 Vercel 静态根目录部署） */
-export const DATA_URL = new URL("../data/report.json", import.meta.url).href;
+/** 历史报告索引与单期数据（相对模块路径，适配 Vercel 静态根目录） */
+export const REPORTS_INDEX_URL = new URL("../data/reports/index.json", import.meta.url).href;
+export const LEGACY_REPORT_URL = new URL("../data/report.json", import.meta.url).href;
+
+export function reportDataUrl(date) {
+  return new URL(`../data/reports/${date}.json`, import.meta.url).href;
+}
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -193,15 +198,65 @@ export function renderFullRecommendation(container, text) {
   });
 }
 
-export async function loadReport() {
-  const res = await fetch(DATA_URL, { cache: "no-store" });
+async function fetchJson(url, label) {
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) {
-    throw new Error(
-      `无法加载 ${DATA_URL}（${res.status} ${res.statusText}）。` +
-        "请确认已执行 python -m src.web.build 且 web/data/report.json 已随部署上传。"
-    );
+    throw new Error(`无法加载 ${label}（${res.status} ${res.statusText}）`);
   }
   return res.json();
+}
+
+export async function loadReportsIndex() {
+  try {
+    return await fetchJson(REPORTS_INDEX_URL, "历史报告索引");
+  } catch {
+    return [];
+  }
+}
+
+export async function loadReportByDate(date) {
+  if (!date) {
+    throw new Error("缺少报告日期");
+  }
+  return fetchJson(reportDataUrl(date), `${date} 报告`);
+}
+
+async function loadLegacyReport() {
+  return fetchJson(
+    LEGACY_REPORT_URL,
+    "旧版 report.json（请运行 python -m src.web.build 生成历史归档）"
+  );
+}
+
+/** @param {{ date?: string | null }} [options] 不传 date 时加载 index 中最新一期 */
+export async function loadReport(options = {}) {
+  const { date } = options;
+  if (date) {
+    return loadReportByDate(date);
+  }
+
+  const index = await loadReportsIndex();
+  if (index.length) {
+    const latest = [...index].sort((a, b) => b.date.localeCompare(a.date))[0];
+    return loadReportByDate(latest.date);
+  }
+
+  return loadLegacyReport();
+}
+
+export function formatReportDate(date) {
+  if (!date) return "—";
+  try {
+    const [y, m, d] = date.split("-").map(Number);
+    const dt = new Date(y, m - 1, d);
+    return dt.toLocaleDateString("zh-CN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  } catch {
+    return date;
+  }
 }
 
 /** 站内根路径，避免在 /detail.html 下使用相对路径导致 404 */

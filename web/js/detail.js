@@ -6,6 +6,7 @@ import {
   loadReport,
   renderFullRecommendation,
   setupAvatar,
+  sitePath,
 } from "./shared.js";
 
 function renderStats(container, creator) {
@@ -32,6 +33,7 @@ function renderStats(container, creator) {
 async function main() {
   const params = new URLSearchParams(window.location.search);
   const rank = params.get("rank");
+  const reportDate = params.get("date");
 
   if (!rank) {
     $("#detail-empty").hidden = false;
@@ -41,7 +43,7 @@ async function main() {
 
   let data;
   try {
-    data = await loadReport();
+    data = await loadReport({ date: reportDate || null });
   } catch (err) {
     $("#detail-empty").hidden = false;
     $("#detail-empty").textContent = `加载失败：${err.message}`;
@@ -52,6 +54,15 @@ async function main() {
   if (!creator) {
     $("#detail-empty").hidden = false;
     return;
+  }
+
+  const backLink = $(".back-link");
+  if (reportDate) {
+    backLink.href = sitePath(`report.html?date=${reportDate}`);
+    backLink.textContent = "← 返回该期报告";
+  } else {
+    backLink.href = sitePath("/");
+    backLink.textContent = "← 返回情报流";
   }
 
   const root = $("#detail-root");

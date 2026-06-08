@@ -1,6 +1,7 @@
 import {
   $,
   formatGeneratedAt,
+  formatReportDate,
   formatSubscribers,
   formatViews,
   formatDate,
@@ -8,6 +9,20 @@ import {
   setupAvatar,
   sitePath,
 } from "./shared.js";
+
+function getRequestedReportDate() {
+  return new URLSearchParams(window.location.search).get("date");
+}
+
+function isHistoricalReportPage() {
+  return window.location.pathname.endsWith("report.html");
+}
+
+function buildDetailHref(rank, reportDate) {
+  const params = new URLSearchParams({ rank: String(rank) });
+  if (reportDate) params.set("date", reportDate);
+  return sitePath(`detail.html?${params.toString()}`);
+}
 
 function renderBrief(brief) {
   $("#brief-title").textContent = brief?.title || "本周 Creator Scout Brief";
@@ -51,7 +66,7 @@ function renderScoutStyle(container, lines) {
   });
 }
 
-function fillCard(card, creator) {
+function fillCard(card, creator, reportDate) {
   setupAvatar(card, creator);
 
   $("[data-name]", card).textContent = creator.name || "—";
@@ -93,7 +108,7 @@ function fillCard(card, creator) {
   $("[data-video-meta]", card).textContent = metaParts.join(" · ") || "—";
 
   const detailLink = $("[data-detail-link]", card);
-  detailLink.href = sitePath(`detail.html?rank=${creator.rank}`);
+  detailLink.href = buildDetailHref(creator.rank, reportDate);
 }
 
 class CardCarousel {
@@ -106,7 +121,7 @@ class CardCarousel {
     this.carousel.addEventListener("scroll", this.onScroll, { passive: true });
   }
 
-  mount(creators) {
+  mount(creators, reportDate) {
     const tpl = $("#card-template");
     this.track.innerHTML = "";
     this.cards = [];
@@ -114,7 +129,7 @@ class CardCarousel {
     if (!creators.length) {
       const empty = document.createElement("p");
       empty.className = "empty-state";
-      empty.textContent = "暂无 creator 数据，请先运行 pipeline 并生成 report.json";
+      empty.textContent = "暂无 creator 数据，请先运行 pipeline 并生成历史报告";
       this.track.appendChild(empty);
       return;
     }
@@ -122,7 +137,7 @@ class CardCarousel {
     creators.forEach((creator) => {
       const node = tpl.content.cloneNode(true);
       const card = node.querySelector(".creator-card");
-      fillCard(card, creator);
+      fillCard(card, creator, reportDate);
       this.track.appendChild(node);
       this.cards.push(card);
     });
@@ -190,20 +205,35 @@ function resetPageScroll() {
 async function main() {
   resetPageScroll();
 
+  const requestedDate = getRequestedReportDate();
+  if (isHistoricalReportPage() && !requestedDate) {
+    $("#brief-body").innerHTML =
+      `<p class="empty-state">缺少报告日期。<a href="${sitePath("history.html")}">返回历史报告列表</a></p>`;
+    return;
+  }
+
   let data;
   try {
-    data = await loadReport();
+    data = await loadReport({ date: requestedDate || null });
   } catch (err) {
     $("#brief-body").innerHTML =
       `<p class="empty-state">无法加载数据（${err.message}）。请运行：<code>python -m src.web.build</code></p>`;
     return;
   }
 
-  $("#meta-generated").textContent = `更新 ${formatGeneratedAt(data.generated_at)}`;
+  const reportDate = data.report_date || requestedDate || null;
+  const metaEl = $("#meta-generated");
+  if (isHistoricalReportPage() && reportDate) {
+    const title = data.title ? `${data.title} · ` : "";
+    metaEl.textContent = `${title}${formatReportDate(reportDate)}`;
+  } else {
+    metaEl.textContent = `更新 ${formatGeneratedAt(data.generated_at)}`;
+  }
+
   renderBrief(data.brief);
 
   const carousel = new CardCarousel($("#carousel-track"), $("#carousel"));
-  carousel.mount(data.creators || []);
+  carousel.mount(data.creators || [], reportDate);
   resetPageScroll();
   requestAnimationFrame(resetPageScroll);
 
