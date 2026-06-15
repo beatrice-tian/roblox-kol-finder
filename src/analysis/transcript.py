@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from config.network import apply_proxy_env, build_transcript_api
 from config.settings import PROJECT_ROOT, get_settings
 from src.models.creator import CreatorRecord
 
@@ -15,6 +16,7 @@ try:
 
     _TRANSCRIPT_AVAILABLE = True
 except ImportError:
+    YouTubeTranscriptApi = None  # type: ignore[misc, assignment]
     _TRANSCRIPT_AVAILABLE = False
 
 MAX_KEYWORDS = 12
@@ -148,6 +150,8 @@ class TranscriptKeywordExtractor:
         self._use_cache = settings.transcript_use_cache
         self._delay_min = delay_min if delay_min is not None else settings.transcript_delay_min
         self._delay_max = delay_max if delay_max is not None else settings.transcript_delay_max
+        self._proxy_url = settings.proxy_url
+        self._transcript_api = None
         self._requests_this_run = 0
         self._blocked = False
         self._stats: dict[str, Any] = {
@@ -186,6 +190,16 @@ class TranscriptKeywordExtractor:
             f"单次网络上限 {self._max_requests}, "
             f"缓存={'开' if self._use_cache else '关'}"
         )
+        proxy = apply_proxy_env(self._proxy_url)
+        if proxy:
+            print(f"  [transcript] 代理: {proxy}")
+        elif self._proxy_url:
+            print(f"  [transcript] 代理: {self._proxy_url}")
+        else:
+            print(
+                "  [transcript] 未配置 PROXY_URL（直连 YouTube 字幕端点，"
+                "国内 IP 易被 REQUEST_BLOCKED）"
+            )
 
         for record in records:
             keywords, transcript_hits = self.extract_for(record)
@@ -296,10 +310,14 @@ class TranscriptKeywordExtractor:
         print(f"  [transcript] fail: {video_id} -> {error_code}")
         return ""
 
-    @staticmethod
-    def _fetch_transcript_network(video_id: str) -> tuple[str, str]:
+    def _get_transcript_api(self):
+        if self._transcript_api is None:
+            self._transcript_api = build_transcript_api(self._proxy_url)
+        return self._transcript_api
+
+    def _fetch_transcript_network(self, video_id: str) -> tuple[str, str]:
         try:
-            api = YouTubeTranscriptApi()
+            api = self._get_transcript_api()
             fetched = api.fetch(
                 video_id,
                 languages=["en", "en-US", "en-GB", "zh", "zh-Hans", "zh-CN"],

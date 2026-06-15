@@ -21,6 +21,9 @@ except ImportError:
     print("ERROR: 未安装 youtube-transcript-api")
     sys.exit(1)
 
+from config.network import apply_proxy_env, build_transcript_api
+from config.settings import get_settings
+
 
 def _video_id(url: str) -> str:
     if "watch?v=" in url:
@@ -76,7 +79,9 @@ def _classify_error(exc: Exception, video_id: str) -> str:
 
 def _fetch_fresh(video_id: str) -> tuple[bool, str, int, str, str]:
     """直连网络，不读缓存。"""
-    api = YouTubeTranscriptApi()
+    settings = get_settings()
+    apply_proxy_env(settings.proxy_url)
+    api = build_transcript_api(settings.proxy_url)
     try:
         fetched = api.fetch(
             video_id,
@@ -104,6 +109,11 @@ def main() -> None:
 
     _safe_print("=" * 60)
     _safe_print("YouTube Transcript 连通性测试（最小）")
+    settings = get_settings()
+    if settings.proxy_url:
+        _safe_print(f"代理: {settings.proxy_url}")
+    else:
+        _safe_print("代理: 未配置 PROXY_URL")
     _safe_print(f"数据源: {CSV_PATH}")
     _safe_print(f"抽样: {len(samples)} 个代表视频（随机，无缓存）")
     _safe_print("=" * 60)

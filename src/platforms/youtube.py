@@ -4,6 +4,7 @@ from statistics import mean
 
 from googleapiclient.discovery import build
 
+from config.network import apply_proxy_env, build_google_http
 from config.settings import Settings
 from src.models.creator import CreatorRecord, Platform
 from src.platforms.base import PlatformClient
@@ -14,11 +15,12 @@ _BATCH_SIZE = 50
 class YouTubeClient(PlatformClient):
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
-        self._service = build(
-            "youtube",
-            "v3",
-            developerKey=settings.youtube_api_key,
-        )
+        apply_proxy_env(settings.proxy_url)
+        build_kwargs: dict = {"developerKey": settings.youtube_api_key}
+        http = build_google_http(settings.proxy_url)
+        if http is not None:
+            build_kwargs["http"] = http
+        self._service = build("youtube", "v3", **build_kwargs)
 
     @property
     def platform_name(self) -> str:

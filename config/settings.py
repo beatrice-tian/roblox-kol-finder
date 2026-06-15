@@ -65,6 +65,14 @@ class Settings:
         )
     )
 
+    proxy_url: str = field(
+        default_factory=lambda: (
+            os.getenv("PROXY_URL", "").strip()
+            or os.getenv("HTTPS_PROXY", "").strip()
+            or os.getenv("HTTP_PROXY", "").strip()
+        )
+    )
+
 
 _settings: Settings | None = None
 

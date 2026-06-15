@@ -120,7 +120,7 @@ def _load_channel_avatars(rows: list[dict[str, Any]]) -> dict[str, str]:
     if not settings.youtube_api_key:
         return {}
     try:
-        return fetch_channel_avatars(ids, settings.youtube_api_key)
+        return fetch_channel_avatars(ids, settings.youtube_api_key, settings.proxy_url)
     except Exception:
         return {}
 
