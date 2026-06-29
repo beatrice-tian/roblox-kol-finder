@@ -1,3 +1,4 @@
+import re
 import time
 from datetime import datetime, timedelta, timezone
 from statistics import mean
@@ -10,6 +11,7 @@ from src.models.creator import CreatorRecord, Platform
 from src.platforms.base import PlatformClient
 
 _BATCH_SIZE = 50
+_RANKING_TITLE_RE = re.compile(r"\brank(?:ing)?\b", re.IGNORECASE)
 
 
 class YouTubeClient(PlatformClient):
@@ -106,6 +108,8 @@ class YouTubeClient(PlatformClient):
         valid_videos: list[tuple[dict, dict[str, int]]] = []
 
         for video in videos:
+            if self._is_ranking_title(video.get("title", "")):
+                continue
             stats = video_stats.get(video["video_id"])
             if not stats:
                 continue
@@ -195,12 +199,15 @@ class YouTubeClient(PlatformClient):
             snippet = item.get("snippet", {})
             if not vid:
                 continue
+            title = snippet.get("title", "")
+            if self._is_ranking_title(title):
+                continue
             snippets.append(
                 {
                     "video_id": vid,
                     "channel_id": snippet.get("channelId", ""),
                     "channel_name": snippet.get("channelTitle", ""),
-                    "title": snippet.get("title", ""),
+                    "title": title,
                     "published_at": snippet.get("publishedAt", ""),
                 }
             )
@@ -286,6 +293,10 @@ class YouTubeClient(PlatformClient):
                 }
 
         return result
+
+    @staticmethod
+    def _is_ranking_title(title: str) -> bool:
+        return bool(_RANKING_TITLE_RE.search(title))
 
     @staticmethod
     def _detect_shorts(title: str) -> bool:
