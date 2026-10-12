@@ -528,5 +528,10 @@
     "text": "",
     "error": "NO_TRANSCRIPT",
     "updated_at": "2026-10-08T06:21:30.010849+00:00"
+  },
+  "dU7DKHzckuY": {
+    "text": "",
+    "error": "REQUEST_BLOCKED",
+    "updated_at": "2026-10-12T01:48:49.151001+00:00"
   }
 }
